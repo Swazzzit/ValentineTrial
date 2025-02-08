@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Valentine's Day</title>
+    <link href="https://fonts.googleapis.com/css2?family=Euphoria+Script&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(to bottom right, #fecdd3, #fda4af, #fb7185);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Euphoria Script', cursive;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .heart {
+            position: absolute;
+            color: rgba(255, 255, 255, 0.4);
+            z-index: 0;
+            filter: drop-shadow(0 0 8px rgba(251, 113, 133, 0.4));
+        }
+
+        .heart svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .container {
+            text-align: center;
+            z-index: 10;
+        }
+
+        .final-container {
+            text-align: center;
+            z-index: 10;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2rem;
+            border-radius: 1rem;
+            backdrop-filter: blur(8px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
+
+        .image {
+            width: 256px;
+            height: 256px;
+            border-radius: 50%;
+            margin-bottom: 2rem;
+            object-fit: cover;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            border: 4px solid rgba(255, 255, 255, 0.8);
+        }
+
+        .message-container {
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .message {
+            font-size: 2.5rem;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeIn 1s ease-out forwards;
+        }
+
+        .final-message {
+            font-size: 3rem;
+        }
+
+        .choice-container {
+            display: none;
+            gap: 2rem;
+            margin-top: 2rem;
+            justify-content: center;
+        }
+
+        .choice-btn {
+            font-family: 'Euphoria Script', cursive;
+            font-size: 2rem;
+            padding: 0.75rem 2.5rem;
+            border: none;
+            border-radius: 2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(8px);
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .choice-btn:hover {
+            transform: scale(1.05);
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        #noBtn {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 0;
+            }
+            20% {
+                opacity: 0.4;
+            }
+            80% {
+                opacity: 0.4;
+            }
+            100% {
+                transform: translateY(-1000%) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .love-message {
+            font-size: 3rem;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+            display: none;
+            position: fixed;
+            top: 30%;
+            left: 0%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            width: 100%;
+            line-height: 1.5;
+            padding: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="mainContainer">
+        <img src="https://images.unsplash.com/photo-1518895949257-7621c3c786d7?w=600&h=400&fit=crop" alt="Romantic Rose" class="image">
+        <div class="message-container">
+            <p class="message"></p>
+        </div>
+    </div>
+
+    <div class="final-container" id="finalContainer">
+        <div class="message-container">
+            <p class="message final-message">Will You Be My Valentine? 🫴🏻</p>
+        </div>
+        <div class="choice-container" id="choiceContainer">
+            <button class="choice-btn" id="yesBtn">Yes🫳🏻</button>
+            <button class="choice-btn" id="noBtn">No🙅🏻‍♀️</button>
+        </div>
+    </div>
+
+    <p class="love-message" id="loveMessage">I Love You<br>Babe😩❤️</p>
+
+    <script>
+        const messages = [
+            "Hey Love",
+            "Here comes the last day",
+            "The final day of this Valentine Week",
+            "And I wanna tell you how much I love you",
+            "And how much you mean to me",
+            "But I know a whole book wouldn't be enough to express it all",
+            "So lemme hop on for the final ask...",
+            "Tani"
+        ];
+
+        const finalWords = ["Will", "You", "Be", "My", "Valentine?"];
+        const messageElement = document.querySelector('.message');
+        const mainContainer = document.getElementById('mainContainer');
+        const finalContainer = document.getElementById('finalContainer');
+        const choiceContainer = document.getElementById('choiceContainer');
+        const noBtn = document.getElementById('noBtn');
+        const yesBtn = document.getElementById('yesBtn');
+        const loveMessage = document.getElementById('loveMessage');
+        let noClickCount = 0;
+
+        function moveButton() {
+            const rangeX = Math.random() * 100 - 50;  // Range -50% to 50%
+            const rangeY = Math.random() * 90 - 30;   // Range -30% to 60%
+
+            noBtn.style.position = 'absolute';
+            noBtn.style.left = `calc(50% + ${rangeX}%)`;
+            noBtn.style.top = `calc(30% + ${rangeY}%)`;
+        }
+
+        function createHearts() {
+            for (let i = 0; i < 20; i++) {
+                const heart = document.createElement('div');
+                heart.className = 'heart';
+                heart.style.left = `${Math.random() * 100}%`;
+                heart.style.top = `${Math.random() * 100}%`;
+                heart.style.width = `${20 + Math.random() * 30}px`;
+                heart.style.height = `${20 + Math.random() * 30}px`;
+                heart.style.animation = `float ${5 + Math.random() * 5}s infinite linear`;
+                heart.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>`;
+                document.body.appendChild(heart);
+            }
+        }
+
+        noBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            noClickCount++;
+            if (noClickCount >= 10) {
+                noBtn.style.display = 'none';
+            } else {
+                moveButton();
+            }
+        });
+
+        yesBtn.addEventListener('click', () => {
+            finalContainer.style.display = 'none';
+            loveMessage.style.display = 'block';
+            loveMessage.style.animation = 'fadeIn 1s ease-out forwards';
+        });
+
+        async function showMessages() {
+            createHearts();
+            
+            await new Promise(resolve => setTimeout(resolve, 2000));
+
+            for (let i = 0; i < messages.length; i++) {
+                messageElement.textContent = messages[i];
+                messageElement.style.animation = 'none';
+                messageElement.offsetHeight;
+                messageElement.style.animation = 'fadeIn 1s ease-out forwards';
+                await new Promise(resolve => setTimeout(resolve, 5000));
+            }
+
+            messageElement.classList.add('final-message');
+            for (let word of finalWords) {
+                messageElement.textContent = word;
+                messageElement.style.animation = 'none';
+                messageElement.offsetHeight;
+                messageElement.style.animation = 'fadeIn 1s ease-out forwards';
+                await new Promise(resolve => setTimeout(resolve, 1000));
+            }
+
+            mainContainer.style.display = 'none';
+            finalContainer.style.display = 'block';
+            choiceContainer.style.display = 'flex';
+        }
+
+        window.addEventListener('load', showMessages);
+    </script>
+</body>
+</html>
